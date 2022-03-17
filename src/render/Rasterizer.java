@@ -95,6 +95,9 @@ Rasterizer {
                 Vec3D tmp = ab;
                 ab = ac;
                 ac = tmp;
+                Vec2D temp=abt;
+                abt=act;
+                act=abt;
             }
 
             double tcx=Math.abs((act.getX()-abt.getX())/(ac.getX()-ab.getX()));
