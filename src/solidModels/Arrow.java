@@ -29,7 +29,7 @@ public class Arrow extends Solid {
         getVertices().add(new Vertex(origin));
         getVertices().add(new Vertex(endPoint));
         getIndices().add(0);getIndices().add(1);
-        getParts().add(new Part(Part.Topology.LINES,0,1,axisCol));
+        getParts().add(new Part(Part.Topology.AXIS,0,1,axisCol));
         getParts().add(new Part(Part.Topology.POINTS,0,1,new Col(255,255,255)));
     }
 }

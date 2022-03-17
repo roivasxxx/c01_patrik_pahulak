@@ -74,22 +74,31 @@ public class Renderer {
                         Vertex bV = b.transform(mat);
 
                         if(aV.isInView() && bV.isInView()){
-                            //test jestli se jedná o osu x/y/z
-                            if(a.getPosition().getX()==0&& a.getPosition().getY()==0&&a.getPosition().getZ()==0){
-
-                                if(b.getPosition().getX()==0.5&&b.getPosition().getY()==0&&b.getPosition().getZ()==0){
-                                    rasterizer.rasterizeLine(aV,bV,part.getColor(),'x');
-                                }else if(b.getPosition().getX()==0&&b.getPosition().getY()==0.5&&b.getPosition().getZ()==0){
-                                    rasterizer.rasterizeLine(aV,bV,part.getColor(),'y');
-                                }else if(b.getPosition().getX()==0&&b.getPosition().getY()==0&&b.getPosition().getZ()==0.5){
-                                    rasterizer.rasterizeLine(aV,bV,part.getColor(),'z');
-                                }
-                            }
-                            else renderLine(aV, bV);
-
+                           renderLine(aV, bV,part.getColor());
                         }else{
                             return;
                         }
+                    }
+                    break;
+                case AXIS:
+                    for(int i=0; i < part.getCount() ; i++) {
+                        int indexA = part.getStart() + i ;
+                        int indexB = part.getStart() + i + 1;
+
+                        Vertex a=solid.getVertices().get(solid.getIndices().get(indexA));
+                        Vertex b=solid.getVertices().get(solid.getIndices().get(indexB));
+
+                        Vertex aV = a.transform(mat);
+                        Vertex bV = b.transform(mat);
+                        if(aV.isInView() && bV.isInView()){
+                                if (part.getColor().eEquals(new Col(255,0,0))  ) {
+                                    rasterizer.rasterizeLine(aV, bV, part.getColor(), 'x');
+                                } else if (part.getColor().eEquals(new Col(0, 255, 0))) {
+                                    rasterizer.rasterizeLine(aV, bV, part.getColor(), 'y');
+                                } else if (part.getColor().eEquals(new Col(0, 0, 255))) {
+                                    rasterizer.rasterizeLine(aV, bV, part.getColor(), 'z');
+                                }
+                        }else return;
                     }
                     break;
                 case TRIANGLES:
@@ -112,6 +121,18 @@ public class Renderer {
 
                     }
                     break;
+                case TRIANGLES_STRIP:
+                    for (int i = 0; i < part.getCount()-2; i++) {
+                        int indexA = part.getStart() + i;
+                        int indexB = part.getStart() + i + 1;
+                        int indexC = part.getStart() + i + 2;
+
+                        Vertex a = solid.getVertices().get(solid.getIndices().get(indexA)).transform(mat);
+                        Vertex b = solid.getVertices().get(solid.getIndices().get(indexB)).transform(mat);
+                        Vertex c = solid.getVertices().get(solid.getIndices().get(indexC)).transform(mat);
+
+                        renderTriangle(a,b,c,part.getColors().get(i%3),false);
+                    }break;
 
             }
         }
@@ -122,8 +143,8 @@ public class Renderer {
 
     }
 
-    private void renderLine(Vertex a, Vertex b){
-
+    private void renderLine(Vertex a, Vertex b,Col col){
+        rasterizer.rasterizeLine(a,b,col);
     }
 
     private void renderTriangle(Vertex a, Vertex b, Vertex c,Col col,boolean outline){

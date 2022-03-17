@@ -139,12 +139,12 @@ Rasterizer {
              double tcx=Math.abs((act.getX()-bct.getX())/(ac.getX()-bc.getX()));
              double tcy=Math.abs((act.getY()-bct.getY())/(ac.getX()-bc.getX()));
 
-             Vec2D tc=bct.add(new Vec2D(tcx,tcy));
+             Vec2D tc=bct.add(new Vec2D(tcx,-tcy));
 
 
 
             for (int x = Math.max((int) bc.getX()+1, 0); x < Math.min(ac.getX(), width-1); x++,
-            tc=tc.add(new Vec2D(tcx,tcy))
+            tc=tc.add(new Vec2D(tcx,-tcy))
             ) {
 
                 double t = (x - bc.getX()) / (ac.getX() - bc.getX());
@@ -278,23 +278,29 @@ Rasterizer {
         Vec3D vecA = a.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
         Graphics g=visibility.getImage().getGraphics();
         drawLine(vecA.getX(), vecA.getY(), vecA.getX(), vecA.getY(),color,text);
-    } 
+    }
 
-
-
-    public void rasterizeLine(Vertex a,Vertex b,Col color,char... axis){
+    public void rasterizeLine(Vertex a,Vertex b,Col color){
         Vec3D vecA = a.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
         Vec3D vecB = b.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
+        Graphics g = visibility.getImage().getGraphics();
+        g.setColor(new Color(color.getRGB()));
+        g.drawLine((int) vecA.getX(),(int)vecA.getY(),(int)vecB.getX(),(int)vecB.getY());
+    }
 
 
+    public void rasterizeLine(Vertex a,Vertex b,Col color,char axis){
+        System.out.println("????");
+        Vec3D vecA = a.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
+        Vec3D vecB = b.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
         drawLine(vecA.getX(), vecA.getY(), vecB.getX(), vecB.getY(),color,axis);
     }
 
-    private void drawLine(double x1, double y1, double x2, double y2,Col color,char... axis) {
+    private void drawLine(double x1, double y1, double x2, double y2,Col color,char axis) {
         Graphics g = visibility.getImage().getGraphics();
         g.setColor(new Color(color.getRGB()));
         g.drawLine((int) x1,(int) y1,(int) x2,(int) y2);
-        g.drawString(Character.toString(axis[0]),(int)x2+5,(int)y2-5);
+        g.drawString(Character.toString(axis),(int)x2+5,(int)y2-5);
     }
 
     private void drawLine(double x1, double y1, double x2, double y2,Col color,String... text) {
@@ -303,4 +309,5 @@ Rasterizer {
         g.drawLine((int) x1,(int) y1,(int) x2,(int) y2);
         g.drawString(text[0],(int)x2+5,(int)y2+10);
     }
+
 }

@@ -10,6 +10,7 @@ import render.Renderer;
 import transforms.*;
 import view.Panel;
 import solidModels.Cube;
+import solidModels.BicubicSurface;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +24,7 @@ public class Controller3D implements Controller, ActionListener {
     Arrow xAxis = new Arrow('x');
     Arrow yAxis = new Arrow('y');
     Arrow zAxis = new Arrow('z');
-
+    TriangleStrip triangleStrip = new TriangleStrip(0.2,-0.2,-0.5);
     Triangle triangle = new Triangle(
 
             new Vertex( new Point3D(0.1, -0.6 ,0),new Vec2D(1,1)),
@@ -41,8 +42,8 @@ public class Controller3D implements Controller, ActionListener {
     );
     Triangle triangleOutlined = new Triangle(
             new Vertex( new Point3D(0.1, 0.1 ,0)),
+            new Vertex( new Point3D(0.2, 0.2 ,0.2)),
             new Vertex( new Point3D(0.1, 0.1 ,0.4)),
-            new Vertex( new Point3D(0.5, 0.1 ,0.4)),
 
             new Col(0,0,1.),true
     );
@@ -62,6 +63,7 @@ public class Controller3D implements Controller, ActionListener {
     Triangle dae=new Triangle(d,a,e,new Col(0,125,125));
     double cubeSize=0.2;
     Cube cube=new Cube(new Vertex(new Point3D(0.8,-0.8,0)),cubeSize);
+    BicubicSurface bc=new BicubicSurface();
 
     private Visibility visibility;
     private Rasterizer rasterizer;
@@ -111,10 +113,11 @@ public class Controller3D implements Controller, ActionListener {
 
     private void initGeometry() {
         cube.setSolidId("1");
-        scene.getSolids().addAll(Arrays.asList(triangle
-                //xAxis,yAxis,zAxis,
-                //,triangle2//,triangleOutlined
-                //,pyramid,abe,bde,cde,cube//,dae,triangle3,triangle4
+        scene.getSolids().addAll(Arrays.asList(
+                xAxis,yAxis,zAxis,triangle
+                ,triangle2,triangleOutlined
+                ,pyramid,abe,bde,cde,cube,
+                bc,triangleStrip
         		));
     }
 

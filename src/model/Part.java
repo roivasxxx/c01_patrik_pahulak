@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Part {
-    public enum Topology {POINTS, LINES, LINE_STRIP, LINE_LOOP, TRIANGLES, TRIANGLES_STRIP, TRIANGLE_FAN}
+    public enum Topology {POINTS, LINES, TRIANGLES, TRIANGLES_STRIP,AXIS}
     private int start;
     private int count;
     private Topology topology;
@@ -49,7 +49,7 @@ public class Part {
     public Topology getTopology() {
         return topology;
     }
-     
+
     public Col getColor()
     {
         return c;
@@ -58,7 +58,7 @@ public class Part {
     public void setColors(List<Col>cols){
         colors=cols;
     }
-
+    public List<Col> getColors(){return colors;}
     public int getColorsLength() { return colors.size();}
 
     public Col getColorAt(int index){return colors.get(index);}
