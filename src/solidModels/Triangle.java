@@ -20,6 +20,19 @@ public class Triangle extends Solid {
 
         getParts().add(new Part(Part.Topology.TRIANGLES, 0,1,col));
     }
+    public Triangle(Vertex a, Vertex b, Vertex c,Col col,boolean outline) {
+        setSolidId("0");
+        this.a = a;
+        this.b = b;
+        this.c = c;
+
+        getVertices().add(a);getVertices().add(b);getVertices().add(c);
+
+        getIndices().add(0);getIndices().add(1);getIndices().add(2);
+
+        getParts().add(new Part(Part.Topology.TRIANGLES, 0,1,col));
+        getParts().get(0).setOutline(outline);
+    }
 
     public Vertex getA() {
         return a;

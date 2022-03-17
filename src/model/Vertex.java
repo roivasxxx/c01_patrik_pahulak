@@ -8,7 +8,7 @@ import java.util.Optional;
 public class Vertex implements Vectorizable<Vertex>{
     private Point3D position;
     private Col color;
-    private Vec2D tc;
+    private Vec2D tc=null;
     private double one=1;
     private static final Col DEFAULT_COLOR=new Col(255,255,0);
 
@@ -80,5 +80,6 @@ public class Vertex implements Vectorizable<Vertex>{
                 position.getY() <= position.getW() &&
                 0 <= position.getZ() && 0<= position.getW());
     }
+    public boolean texturedVertex(){return tc!=null;}
 }
 

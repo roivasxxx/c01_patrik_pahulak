@@ -12,6 +12,7 @@ public class Part {
     private Topology topology;
     private Col c;
     private List<Col> colors;
+    private boolean outline=false;
 
     public Part(Topology topology,int start, int count,Col color) {
         this.start = start;
@@ -61,4 +62,7 @@ public class Part {
     public int getColorsLength() { return colors.size();}
 
     public Col getColorAt(int index){return colors.get(index);}
+
+    public boolean getOutline(){return this.outline;}
+    public void setOutline(boolean b){outline=b;}
 }

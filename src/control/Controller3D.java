@@ -1,7 +1,6 @@
 package control;
 
 import solidModels.*;
-import model.Solid;
 import model.Vertex;
 import model.Scene;
 import raster.RasterBufferedImage;
@@ -11,14 +10,11 @@ import render.Renderer;
 import transforms.*;
 import view.Panel;
 import solidModels.Cube;
-import solidModels.Line;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Controller3D implements Controller, ActionListener {
 
@@ -43,6 +39,13 @@ public class Controller3D implements Controller, ActionListener {
 
             new Col(0,0,1.)
     );
+    Triangle triangleOutlined = new Triangle(
+            new Vertex( new Point3D(0.1, 0.1 ,0)),
+            new Vertex( new Point3D(0.1, 0.1 ,0.4)),
+            new Vertex( new Point3D(0.5, 0.1 ,0.4)),
+
+            new Col(0,0,1.),true
+    );
     
 
     Vertex a=new Vertex(new Point3D(2,-2,0));
@@ -59,7 +62,6 @@ public class Controller3D implements Controller, ActionListener {
     Triangle dae=new Triangle(d,a,e,new Col(0,125,125));
     double cubeSize=0.2;
     Cube cube=new Cube(new Vertex(new Point3D(0.8,-0.8,0)),cubeSize);
-    Line line=new Line(new Vertex(new Point3D(1.5,1,0)),new Vertex(new Point3D(1,1,0)));
 
     private Visibility visibility;
     private Rasterizer rasterizer;
@@ -109,9 +111,10 @@ public class Controller3D implements Controller, ActionListener {
 
     private void initGeometry() {
         cube.setSolidId("1");
-        scene.getSolids().addAll(Arrays.asList(xAxis,yAxis,zAxis,triangle
-                ,triangle2,line
-                ,pyramid,abe,bde,cde,cube//,dae,triangle3,triangle4
+        scene.getSolids().addAll(Arrays.asList(triangle
+                //xAxis,yAxis,zAxis,
+                //,triangle2//,triangleOutlined
+                //,pyramid,abe,bde,cde,cube//,dae,triangle3,triangle4
         		));
     }
 
@@ -299,6 +302,7 @@ public class Controller3D implements Controller, ActionListener {
             public void componentResized(ComponentEvent e) {
                 panel.resize();
                 initObjects(panel.getRaster());
+                redraw();
             }
         });
     }

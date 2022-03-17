@@ -9,7 +9,7 @@ public class RasterBufferedImage implements Raster<Col>{
     private int width,height;
     private int[][]array;
     private final BufferedImage img;
-    private Col col;
+    private Col col=new Col(0,0,0);
 
     public RasterBufferedImage(int w,int h){
         width=w;

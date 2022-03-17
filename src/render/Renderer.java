@@ -13,10 +13,7 @@ import model.Solid;
 import model.Vertex;
 import raster.RasterBufferedImage;
 import raster.Visibility;
-import transforms.Mat4;
-import transforms.Mat4Identity;
-import transforms.Mat4Transl;
-import transforms.Col;
+import transforms.*;
 
 import javax.imageio.ImageIO;
 
@@ -107,8 +104,12 @@ public class Renderer {
                         b.setTex(solid.getVertices().get(solid.getIndices().get(indexB)).getTex());
                         Vertex c = solid.getVertices().get(solid.getIndices().get(indexC)).transform(mat);
                         c.setTex(solid.getVertices().get(solid.getIndices().get(indexC)).getTex());
-                        renderTriangle(a,b,c,part.getColorsLength()>0?part.getColorAt(i):part.getColor());
-                        
+                        if (part.getOutline()) {
+                            renderTriangle(a, b, c, part.getColorsLength() > 0 ? part.getColorAt(i) : part.getColor(), true);
+                        } else {
+                            renderTriangle(a, b, c, part.getColorsLength() > 0 ? part.getColorAt(i) : part.getColor(),false);
+                        }
+
                     }
                     break;
 
@@ -122,30 +123,13 @@ public class Renderer {
     }
 
     private void renderLine(Vertex a, Vertex b){
-        if(a.getZ()<b.getZ()){
-            Vertex temp=a;
-            a=b;
-            b=a;
-        }
-        if(a.getZ()<=0)return;
-        if(b.getZ()<=0){
-            double t = a.getPosition().getZ() / (a.getPosition().getZ() - b.getPosition().getZ());
-            Vertex v1 = a.mul(1 - t).add(b.mul(t));
-            rasterizer.rasterizeLine(a,v1);
-        }
-        rasterizer.rasterizeLine(a,b);
+
     }
 
-    private void renderTriangle(Vertex a, Vertex b, Vertex c,Col col){
+    private void renderTriangle(Vertex a, Vertex b, Vertex c,Col col,boolean outline){
     	
         List<Vertex> vcs = Arrays.asList(a, b, c); // triangle vertices 
-        //transformace done in prev step
-        
-        //fast clip
-        //TODO
 
-        //orezani z>=0 tedy w>=zn, tedy w>0
-        //TODO sort a.z >= b.z >= c.z
         vcs.sort(Comparator.comparingDouble(v -> v.getPosition().getZ()));
 
         Vertex newA=vcs.get(0);
@@ -155,60 +139,68 @@ public class Renderer {
         if (newA.getPosition().getZ()<=0)
             return;
         if (newB.getPosition().getZ()<=0){
-        	/*
-            double s1 = (0 - vcs.get(0).getPosition().getZ())/(vcs.get(0).getPosition().getZ() - vcs.get(1).getPosition().getZ());
-            Vertex ab = vcs.get(1).mul(1-s1).add(vcs.get(0).mul(s1));
 
-            double s2=(0 - vcs.get(0).getPosition().getZ())/(vcs.get(0).getPosition().getZ() - vcs.get(2).getPosition().getZ());
-            Vertex ac = vcs.get(2).mul(1-s2).add(vcs.get(0).mul(s2)); //TODO
-			*/
-            
-            // rasterizer.rasterizePoint(a);
-            // rasterizer.rasterizePoint(ab);
-            // rasterizer.rasterizePoint(ac);
             double t = newA.getPosition().getZ() / (newA.getPosition().getZ() - newB.getPosition().getZ());
             Vertex v1 = newA.mul(1 - t).add(newB.mul(t));
 
+            if(a.texturedVertex()) {
+               Vec2D v1tex = newA.getTex().mul(1 - t).add(newB.getTex().mul(t));
+                v1.setTex(v1tex);
+            }
+
             t = newA.getPosition().getZ() / (newA.getPosition().getZ() - newC.getPosition().getZ());
             Vertex v2 = newA.mul(1 - t).add(newB.mul(t));
-            if (a.getTex() != null) {
+
+            if(a.texturedVertex()) {
+                Vec2D v2tex = newA.getTex().mul(1 - t).add(newB.getTex().mul(t));
+                v2.setTex(v2tex);
+            }
+
+            if (a.texturedVertex()) {
                 rasterizer.rasterizeTriangle(newA, v1, v2, texture);
-            } else {
+            } else if(outline){rasterizer.rasterizeTriangleOutline(newA,v1,v2,col);}else {
                 rasterizer.rasterizeTriangle(newA, v1, v2, col);
             }
         }
-        //dva trojuhelniky
-        if(vcs.get(2).getPosition().getZ()<=0){
-            /*double s1=(0-vcs.get(0).getPosition().getZ())/(vcs.get(0).getPosition().getZ()-vcs.get(2).getPosition().getZ());
-            Vertex ac=vcs.get(2).mul(1-s1).add(vcs.get(0).mul(s1));
 
-            double s2=(0-vcs.get(1).getPosition().getZ())/(vcs.get(1).getPosition().getZ()-vcs.get(2).getPosition().getZ());
-            Vertex bc=vcs.get(2).mul(1-s2).add(vcs.get(1).mul(s2));
-*/
-            
-            
+        if(newC.getPosition().getZ()<=0){
+
             double t = newA.getPosition().getZ() / (newA.getPosition().getZ() - newC.getPosition().getZ());
             Vertex v1 = newA.mul(1 - t).add(newC.mul(t));
 
+            if(a.texturedVertex()){
+                Vec2D v1tex=newA.getTex().mul(1-t).add(newC.getTex().mul(t));
+                v1.setTex(v1tex);
+            }
+
             t = newB.getPosition().getZ() / (newB.getPosition().getZ() - newC.getPosition().getZ());
             Vertex v2 = newB.mul(1 - t).add(newC.mul(t));
-            if (a.getTex() != null) {
-                rasterizer.rasterizeTriangle(newA, newB, v1, texture);
-            } else {
-                rasterizer.rasterizeTriangle(newA, newB, v1, col);
+
+            if(a.texturedVertex()) {
+                Vec2D v2tex=newB.getTex().mul(1-t).add(newC.getTex().mul(t));
+                v2.setTex(v2tex);
             }
-            if (a.getTex() != null) {
+
+
+            if (a.texturedVertex()) {
+                rasterizer.rasterizeTriangle(newA, newB, v1, texture);
                 rasterizer.rasterizeTriangle(newA, v1, v2, texture);
-            } else {
+            }else if(outline){
+                rasterizer.rasterizeTriangleOutline(newA, newB, v1,col);
+                rasterizer.rasterizeTriangleOutline(newA, v1, v2,col);
+            }
+            else {
+                rasterizer.rasterizeTriangle(newA, newB, v1, col);
                 rasterizer.rasterizeTriangle(newA, v1, v2, col);
             }
 
         }
-        if (a.getTex() != null) {
+        if (a.texturedVertex()) {
             rasterizer.rasterizeTriangle(newA, newB, newC, texture);
-        } else {
+        }else if(outline){rasterizer.rasterizeTriangleOutline(newA, newB, newC,col);}
+        else {
             rasterizer.rasterizeTriangle(newA, newB, newC, col);
         }
-        //TODO
+
     }
 }

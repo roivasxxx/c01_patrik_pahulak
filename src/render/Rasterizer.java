@@ -68,18 +68,11 @@ Rasterizer {
 
         int texw=texture[0].length-1;
         int texh=texture.length-1;
-        double tcEdgeStepLx=(tcB.getX()-tcA.getX())/(b.getY()-a.getY());
-        double tcEdgeStepLy=(tcB.getY()-tcA.getY())/(b.getY()-a.getY());
-        double tcEdgeStepRx=(tcC.getX()-tcA.getX())/(c.getY()-a.getY());
-        double tcEdgeStepRy=(tcC.getY()-tcA.getY())/(c.getY()-a.getY());
-        Vec2D tcEdgeStepL=new Vec2D(tcEdgeStepLx,tcEdgeStepLy);
-        Vec2D tcEdgeStepR=new Vec2D(tcEdgeStepRx,tcEdgeStepRy);
-        Vec2D tcEdgeL=tcA.add(tcEdgeStepL);
-        Vec2D tcEdgeR=tcA.add(tcEdgeStepR);
+
 
         //flatbottom
         for (int y = Math.max((int) a.getY()+1, 0); y < Math.min(b.getY(), height - 1);
-             y++,tcEdgeL=tcEdgeL.add(tcEdgeStepL),tcEdgeR=tcEdgeR.add(tcEdgeStepR)
+             y++
         ) {
 
             double s1 = (y - a.getY()) / (b.getY() - a.getY());
@@ -89,7 +82,7 @@ Rasterizer {
 
             Vec2D abt=tcA.mul(1-s1).add(tcB.mul(s1));
             Vec2D act=tcA.mul(1-s2).add(tcC.mul(s2));
-            double interpolatedW=wa*(1-s1)+wb*s1;
+            double interpolatedW=wb*(1-s1)+wc*s1;
 
             if (ab.getX() > ac.getX()) {
                 Vec3D tmp = ab;
@@ -97,17 +90,14 @@ Rasterizer {
                 ac = tmp;
                 Vec2D temp=abt;
                 abt=act;
-                act=abt;
+                act=temp;
             }
 
             double tcx=Math.abs((act.getX()-abt.getX())/(ac.getX()-ab.getX()));
             double tcy=Math.abs((act.getY()-abt.getY())/(ac.getX()-ab.getX()));
-            System.out.println(tcx+" "+tcy);
-            //double tcx=(tcEdgeR.getX()-tcEdgeL.getX())/(ac.getX()-ab.getX());
-            //double tcy=(tcEdgeR.getY()-tcEdgeL.getY())/(ac.getX()-ab.getX());
+
             Vec2D tc=abt.add(new Vec2D(tcx,tcy));
-            //System.out.println(tcEdgeR.getX()+" "+tcEdgeR.getY()+" "+tcEdgeL.getX()+" "+tcEdgeL.getY());
-            //Vec2D tc=tcEdgeL;
+
             for (int x = Math.max((int) ab.getX()+1, 0); x < Math.min(ac.getX(), width-1); x++,
             tc=tc.add(new Vec2D(tcx,tcy))
             ) {
@@ -122,36 +112,36 @@ Rasterizer {
             }
 
         }
-        /*
-         tcEdgeStepLx=(tcC.getX()-tcA.getX())/(c.getY()-a.getY());
-         tcEdgeStepLy=(tcC.getY()-tcA.getY())/(c.getY()-a.getY());
-         tcEdgeStepRx=(tcC.getX()-tcB.getX())/(c.getY()-b.getY());
-         tcEdgeStepRy=(tcC.getY()-tcB.getY())/(c.getY()-b.getY());
-         tcEdgeStepL=new Vec2D(tcEdgeStepLx,tcEdgeStepLy);
-         tcEdgeStepR=new Vec2D(tcEdgeStepRx,tcEdgeStepRy);
 
-         tcEdgeL=tcA.add(tcEdgeStepL);
-         tcEdgeR=tcB.add(tcEdgeStepR);
+
         //flat top
-        for (int y = Math.max((int) b.getY()+1, 0); y < Math.min(c.getY(), height - 1); y++,
-                tcEdgeL=tcEdgeL.add(tcEdgeStepL),tcEdgeR=tcEdgeR.add(tcEdgeStepR)
+        for (int y = Math.max((int) b.getY()+1, 0); y < Math.min(c.getY(), height - 1); y++){
 
-        ) {
             double s1 = (y - b.getY()) / (c.getY() - b.getY());
             double s2 = (y - a.getY()) / (c.getY() - a.getY());
             Vec3D bc = b.mul(1 - s1).add(c.mul(s1));
             Vec3D ac = a.mul(1 - s2).add(c.mul(s2));
-            //Vec2D uvs=tcA.mul(1-s2).add(tcC.mul(s2));
-            //Vec2D uvs=tcA.mul(1-s2).add(tcC.mul(s2));
+
+            Vec2D bct=tcB.mul(1-s1).add(tcC.mul(s1));
+            Vec2D act=tcA.mul(1-s2).add(tcC.mul(s2));
+
+             double interpolatedW=wa*(1-s1)+wc*s1;
+
             if (bc.getX() > ac.getX()) {
                 Vec3D tmp = bc;
                 bc = ac;
                 ac = tmp;
+                Vec2D temp=bct;
+                bct=act;
+                act=temp;
             }
-            double tcx=(tcEdgeR.getX()-tcEdgeL.getX())/(ac.getX()-bc.getX());
-            double tcy=(tcEdgeR.getY()-tcEdgeL.getY())/(ac.getX()-bc.getX());
 
-            Vec2D tc=tcEdgeL;
+             double tcx=Math.abs((act.getX()-bct.getX())/(ac.getX()-bc.getX()));
+             double tcy=Math.abs((act.getY()-bct.getY())/(ac.getX()-bc.getX()));
+
+             Vec2D tc=bct.add(new Vec2D(tcx,tcy));
+
+
 
             for (int x = Math.max((int) bc.getX()+1, 0); x < Math.min(ac.getX(), width-1); x++,
             tc=tc.add(new Vec2D(tcx,tcy))
@@ -160,14 +150,17 @@ Rasterizer {
                 double t = (x - bc.getX()) / (ac.getX() - bc.getX());
                 double z = bc.mul(1 - t).add(ac.mul(t)).getZ();
 
+                int u=(int)Math.min(Math.abs((1/interpolatedW)*tc.getX()*texw),texw);
+                int vv=(int)((1/interpolatedW)*tc.getY()*texh);
+                int v=(int)Math.min(Math.abs((1/interpolatedW)*tc.getY()*texh),texh);
                 visibility.setVisiblePixelWithZtest(x, y, z, texture
-                        [(int)Math.min(Math.abs(tc.getX()*texw),texw)]
-                [(int)Math.min(Math.abs(tc.getY()*texh),texh)]
+                        [u]
+                        [v]
                 );
 
             }
 
-        }*/
+        }
     }
     public void rasterizeTriangle(Vertex aa, Vertex bb, Vertex cc,Col col) {
 
@@ -221,16 +214,64 @@ Rasterizer {
             }
         }
 
+    }
+    public void rasterizeTriangleOutline(Vertex aa, Vertex bb, Vertex cc,Col col) {
+        col=new Col(255,255,255);
+        Vec3D a = aa.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
+        Vec3D b = bb.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
+        Vec3D c = cc.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
 
-       
 
-        // Vec2D aVP; //TODO
-        // Vec2D bVP; //TODO
-        // Vec2D cVP; //TODO
-        //usporadat a, b, c aVP, aVP, bVP, CVP podle aVP.y <= bVP.y <= cVP.y
+        List<Vec3D> vec3DList = Arrays.asList(a,b,c);
+        Collections.sort(vec3DList,Comparator.comparingDouble(Vec3D::getY));
 
-        //rasterize horni polovinu od aVP.y do bVP.y
-        //rasterize dolni polovinu od bVP.y do cVP.y
+        a = vec3DList.get(0);
+        b = vec3DList.get(1);
+        c = vec3DList.get(2);
+
+        for (int y = Math.max((int) a.getY()+1, 0); y < Math.min(b.getY(), height - 1); y++) {
+            double s1 = (y - a.getY()) / (b.getY() - a.getY());
+            double s2 = (y - a.getY()) / (c.getY() - a.getY());
+            Vec3D ab = a.mul(1 - s1).add(b.mul(s1));
+            Vec3D ac = a.mul(1 - s2).add(c.mul(s2));
+            if (ab.getX() > ac.getX()) {
+                Vec3D tmp = ab;
+                ab = ac;
+                ac = tmp;
+            }
+            int xMin = Math.max((int) ab.getX()+1, 0);
+            int xMax= Math.min((int)ac.getX(), width-1);
+            double t = (xMin - ab.getX()) / (ac.getX() - ab.getX());
+            double z = ab.mul(1 - t).add(ac.mul(t)).getZ();
+            visibility.setVisiblePixelWithZtest(xMin, y, z, col);
+            t = (xMax - ab.getX()) / (ac.getX() - ab.getX());
+            z = ab.mul(1 - t).add(ac.mul(t)).getZ();
+            visibility.setVisiblePixelWithZtest(xMax, y, z, col);
+        }
+
+
+        for (int y = Math.max((int) b.getY()+1, 0); y < Math.min(c.getY(), height - 1); y++) {
+            double s1 = (y - b.getY()) / (c.getY() - b.getY());
+            double s2 = (y - a.getY()) / (c.getY() - a.getY());
+            Vec3D bc = b.mul(1 - s1).add(c.mul(s1));
+            Vec3D ac = a.mul(1 - s2).add(c.mul(s2));
+
+            if (bc.getX() > ac.getX()) {
+                Vec3D tmp = bc;
+                bc = ac;
+                ac = tmp;
+            }
+
+            int xMin =Math.min((int)ac.getX(), width-1);
+            int xMax=Math.max((int) bc.getX()+1, 0);
+            double t = (xMin - bc.getX()) / (ac.getX() - bc.getX());
+            double z = bc.mul(1 - t).add(ac.mul(t)).getZ();
+            visibility.setVisiblePixelWithZtest(xMin, y, z, col);
+            t = (xMax - bc.getX()) / (ac.getX() - bc.getX());
+            z = bc.mul(1 - t).add(ac.mul(t)).getZ();
+            visibility.setVisiblePixelWithZtest(xMax, y, z, col);
+        }
+
     }
 
     public void rasterizePoint(Vertex a,Col color,String... text){
@@ -239,43 +280,7 @@ Rasterizer {
         drawLine(vecA.getX(), vecA.getY(), vecA.getX(), vecA.getY(),color,text);
     } 
 
-    public void rasterizeLine(Vertex a,Vertex b){
-        Vec3D aa = a.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
-        Vec3D bb = b.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
-        
-        if(bb.getX()>aa.getX()){
-            Vec3D temp=aa;
-            aa=bb;
-            bb=temp;
-        }
-        x2=aa.getX();
-        y2=aa.getY();
-        
-        x1=bb.getX();
-        y1=bb.getY();
 
-        int dx, dy, p, x, y;
-        dx=x2-x1;
-        dy=y2-y1;
-        x=x1;
-        y=y1;
-        p=2*dy-dx;
-        while(x<x1)  {
-            double t = (x - x2) / (x2-x1);
-            double z = aa.mul(1 - t).add(bb.mul(t)).getZ();  
-            if(p>=0){  
-            visibility.setVisiblePixelWithZtest(x,y,z,new Col(255,255,255));  
-            y=y+1;  
-            p=p+2*dy-2*dx;  
-        }  
-        else  
-        {  
-            putpixel(x,y,7);  
-            p=p+2*dy;}  
-            x=x+1;  
-        }  
-
-    }
 
     public void rasterizeLine(Vertex a,Vertex b,Col color,char... axis){
         Vec3D vecA = a.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
