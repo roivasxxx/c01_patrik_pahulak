@@ -239,6 +239,44 @@ Rasterizer {
         drawLine(vecA.getX(), vecA.getY(), vecA.getX(), vecA.getY(),color,text);
     } 
 
+    public void rasterizeLine(Vertex a,Vertex b){
+        Vec3D aa = a.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
+        Vec3D bb = b.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
+        
+        if(bb.getX()>aa.getX()){
+            Vec3D temp=aa;
+            aa=bb;
+            bb=temp;
+        }
+        x2=aa.getX();
+        y2=aa.getY();
+        
+        x1=bb.getX();
+        y1=bb.getY();
+
+        int dx, dy, p, x, y;
+        dx=x2-x1;
+        dy=y2-y1;
+        x=x1;
+        y=y1;
+        p=2*dy-dx;
+        while(x<x1)  {
+            double t = (x - x2) / (x2-x1);
+            double z = aa.mul(1 - t).add(bb.mul(t)).getZ();  
+            if(p>=0){  
+            visibility.setVisiblePixelWithZtest(x,y,z,new Col(255,255,255));  
+            y=y+1;  
+            p=p+2*dy-2*dx;  
+        }  
+        else  
+        {  
+            putpixel(x,y,7);  
+            p=p+2*dy;}  
+            x=x+1;  
+        }  
+
+    }
+
     public void rasterizeLine(Vertex a,Vertex b,Col color,char... axis){
         Vec3D vecA = a.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
         Vec3D vecB = b.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));

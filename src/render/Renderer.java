@@ -88,7 +88,7 @@ public class Renderer {
                                     rasterizer.rasterizeLine(aV,bV,part.getColor(),'z');
                                 }
                             }
-                            else rasterizer.rasterizeLine(aV, bV,part.getColor());
+                            else renderLine(aV, bV);
 
                         }else{
                             return;
@@ -122,7 +122,18 @@ public class Renderer {
     }
 
     private void renderLine(Vertex a, Vertex b){
-
+        if(a.getZ()<b.getZ()){
+            Vertex temp=a;
+            a=b;
+            b=a;
+        }
+        if(a.getZ()<=0)return;
+        if(b.getZ()<=0){
+            double t = a.getPosition().getZ() / (a.getPosition().getZ() - b.getPosition().getZ());
+            Vertex v1 = a.mul(1 - t).add(b.mul(t));
+            rasterizer.rasterizeLine(a,v1);
+        }
+        rasterizer.rasterizeLine(a,b);
     }
 
     private void renderTriangle(Vertex a, Vertex b, Vertex c,Col col){

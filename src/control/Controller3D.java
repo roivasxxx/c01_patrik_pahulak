@@ -11,6 +11,7 @@ import render.Renderer;
 import transforms.*;
 import view.Panel;
 import solidModels.Cube;
+import solidModels.Line;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,7 +59,7 @@ public class Controller3D implements Controller, ActionListener {
     Triangle dae=new Triangle(d,a,e,new Col(0,125,125));
     double cubeSize=0.2;
     Cube cube=new Cube(new Vertex(new Point3D(0.8,-0.8,0)),cubeSize);
-
+    Line line=new Line(new Vertex(new Point3D(1.5,1,0)),new Vertex(new Point3D(1,1,0)));
 
     private Visibility visibility;
     private Rasterizer rasterizer;
@@ -109,7 +110,7 @@ public class Controller3D implements Controller, ActionListener {
     private void initGeometry() {
         cube.setSolidId("1");
         scene.getSolids().addAll(Arrays.asList(xAxis,yAxis,zAxis,triangle
-                ,triangle2
+                ,triangle2,line
                 ,pyramid,abe,bde,cde,cube//,dae,triangle3,triangle4
         		));
     }
