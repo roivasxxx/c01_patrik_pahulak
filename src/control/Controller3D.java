@@ -11,6 +11,7 @@ import transforms.*;
 import view.Panel;
 import solidModels.Cube;
 import solidModels.BicubicSurface;
+import solidModels.Pyramid;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,13 +55,9 @@ public class Controller3D implements Controller, ActionListener {
 	Vertex c=new Vertex(new Point3D(2,-2.5,0));
 	Vertex d=new Vertex(new Point3D(2.5,-2.5,0));
 	Vertex e=new Vertex(new Point3D(2.25,-2.25,1));
-    Pyramid pyramid = new Pyramid(
-    		a,b,c,d,e
-    		);
-    Triangle abe = new Triangle(a,b,e,new Col(255,255,0));
-    Triangle bde = new Triangle(b,d,e,new Col(125,125,0));
-    Triangle cde=new Triangle(c,a,e,new Col(0,255,255));
-    Triangle dae=new Triangle(d,a,e,new Col(0,125,125));
+
+    Pyramid ppp=new Pyramid(e,a,b,d,c);
+
     double cubeSize=0.2;
     Cube cube=new Cube(new Vertex(new Point3D(0.8,-0.8,0)),cubeSize);
     BicubicSurface bc=new BicubicSurface();
@@ -116,9 +113,8 @@ public class Controller3D implements Controller, ActionListener {
         cube.setSolidId("1");
         scene.getSolids().addAll(Arrays.asList(
                 xAxis,yAxis,zAxis,triangle
-                ,triangle2,triangleOutlined
-                ,pyramid,abe,bde,cde,cube,
-                bc,triangleStrip
+                ,triangle2,triangleOutlined,cube,
+                bc,triangleStrip,ppp
         		));
     }
 
@@ -217,101 +213,7 @@ public class Controller3D implements Controller, ActionListener {
               }
               }
            });
-        //             case KeyEvent.VK_BACK_SPACE:
-        //                 hardClear();
-        //                 break;
-        //             case KeyEvent.VK_M:
-        //                 modeCleared = !modeCleared;
-        //                 panel.clear();
-        //                 break;
-        //         }
 
-        //         switch (key.getKeyCode()) {
-        //             //Movement
-        //             case KeyEvent.VK_SHIFT -> {
-        //                 cameraView = cameraView.up(0.1);
-        //                 redraw();
-        //             }
-        //             case KeyEvent.VK_CONTROL -> {
-        //                 cameraView = cameraView.down(0.1);
-        //                 redraw();
-        //             }
-        //             case KeyEvent.VK_W -> {
-        //                 cameraView = cameraView.forward(0.1);
-        //                 redraw();
-        //             }
-        //             case KeyEvent.VK_S -> {
-        //                 cameraView = cameraView.backward(0.1);
-        //                 redraw();
-        //             }
-        //             case KeyEvent.VK_A -> {
-        //                 cameraView = cameraView.left(0.1);
-        //                 redraw();
-        //             }
-        //             case KeyEvent.VK_D -> {
-        //                 cameraView = cameraView.right(0.1);
-        //                 redraw();
-        //             }
-        //             //Rotations
-        //             case KeyEvent.VK_E -> zInc += 0.1;
-        //             case KeyEvent.VK_Q -> zInc -= 0.1;
-        //             case KeyEvent.VK_R -> yInc += 0.1;
-        //             case KeyEvent.VK_F -> yInc -= 0.1;
-        //             case KeyEvent.VK_X -> xInc -= 0.1;
-        //             case KeyEvent.VK_C -> xInc += 0.1;
-        //             //Transforms
-        //             case KeyEvent.VK_NUMPAD9 -> zTransform += 0.1;
-        //             case KeyEvent.VK_NUMPAD7 -> zTransform -= 0.1;
-        //             case KeyEvent.VK_NUMPAD4 -> yTransform += 0.1;
-        //             case KeyEvent.VK_NUMPAD6 -> yTransform -= 0.1;
-        //             case KeyEvent.VK_NUMPAD8 -> xTransform += 0.1;
-        //             case KeyEvent.VK_NUMPAD5 -> xTransform -= 0.1;
-        //             //zoom
-        //             case KeyEvent.VK_NUMPAD1 -> zoom += 0.1;
-        //             case KeyEvent.VK_NUMPAD2 -> zoom -= 0.1;
-        //             //extends
-        //             case KeyEvent.VK_U -> {
-        //                 try {
-        //                     shadeI = shadeI + 1;
-        //                     rasterizer.setShader(shaderList.get(shadeI));
-        //                 }catch (Exception e){
-        //                     shadeI = 0;
-        //                     rasterizer.setShader(shaderList.get(shadeI));
-        //                 }
-        //             }
-        //             case KeyEvent.VK_O -> {
-        //                 outline = !outline;
-        //                 visibility.setOutline(outline);
-        //             }
-        //             case KeyEvent.VK_P -> {
-        //                 if (perspective) {
-        //                     scene.setProjection(new Mat4OrthoRH(
-        //                             2, 2, 0.1, 100));
-        //                 } else {
-        //                     scene.setProjection(new Mat4PerspRH(
-        //                             (float) Math.PI / 2, 1, 0.1, 100));
-        //                 }
-        //                 perspective = !perspective;
-        //                 redraw();
-        //             }
-
-        //             case KeyEvent.VK_G -> {
-        //                 JOptionPane.showMessageDialog(null,
-        //                         getSolidDialog(), "Choose solid dialog", JOptionPane.PLAIN_MESSAGE);
-
-        //                 if(comboBox.getSelectedItem() != null){
-        //                     JOptionPane.showMessageDialog(null,
-        //                             getTransformDialog(),
-        //                             comboBox.getSelectedItem().toString() + " transform dialog",
-        //                             JOptionPane.PLAIN_MESSAGE);
-        //                 }
-        //                 redraw();
-        //             }
-        //             default -> throw new IllegalStateException("Unexpected value: " + key.getKeyCode());
-        //         }
-        //         redraw();
-        //     }
-        // });
 
         panel.addComponentListener(new ComponentAdapter() {
             @Override
@@ -323,59 +225,6 @@ public class Controller3D implements Controller, ActionListener {
         });
     }
 
-    // private Object getTransformDialog() {
-    //     JPanel jPanel = new JPanel();
-
-    //     Button btnActive = new Button("Set active.");
-    //     Button btnAnimation = new Button("Turn on/off animation.");
-
-    //     for (Solid s : scene.getSolids()) {
-
-    //         if (s.getClass().getName().substring(16).equals(comboBox.getSelectedItem().toString())) {
-    //             active = s;
-    //         }
-    //     }
-
-    //     ActionListener transformListener = actionEvent -> {
-    //         deActivate();
-    //         active.setActiveSolid();
-    //     };
-
-    //     ActionListener animation = actionEvent -> {
-    //         if (tm) timer.start();
-    //         else timer.stop();
-    //         tm = !tm;
-    //     };
-
-    //     btnActive.addActionListener(transformListener);
-    //     btnAnimation.addActionListener(animation);
-    //     jPanel.add(btnActive);
-    //     jPanel.add(btnAnimation);
-    //     return jPanel;
-    // }
-
-    // private void deActivate() {
-    //     for (Solid deActive : scene.getSolids()) {
-    //         deActive.deActiveSolid();
-    //     }
-    // }
-
-    // private JPanel getSolidDialog() {
-    //     JPanel jPanel = new JPanel();
-    //     jPanel.add(new Label("Choose what solid do you want to change:"));
-    //     List<String> options = new ArrayList<>();
-
-    //     for (Solid s : scene.getSolids()) {
-    //         String tmpStr = s.getClass().getName();
-    //         options.add(tmpStr.substring(16));
-    //     }
-
-    //     JComboBox comboBox = new JComboBox(options.toArray());
-    //     setComboBox(comboBox);
-    //     comboBox.addItemListener(e -> setComboBox(comboBox));
-    //     jPanel.add(comboBox);
-    //     return jPanel;
-    // }
 
     private void setComboBox(JComboBox comboBox) {
         this.comboBox = comboBox;
@@ -407,10 +256,7 @@ public class Controller3D implements Controller, ActionListener {
         panel.repaint();
     }
 
-    private void hardClear() {
-        panel.clear();
-        initObjects(panel.getRaster());
-    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {

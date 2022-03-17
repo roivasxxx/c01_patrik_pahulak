@@ -31,7 +31,6 @@ public class RasterDepthBuffer implements Raster<Double>{
         	
         	return null;
         	}
-        //System.out.println("getPixel: z="+zBuffer[x][y]);
         	return zBuffer[x][y];
     }
     @Override

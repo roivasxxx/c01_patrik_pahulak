@@ -133,6 +133,28 @@ public class Renderer {
 
                         renderTriangle(a,b,c,part.getColors().get(i%3),false);
                     }break;
+                case TRIANGLE_FAN:{
+                    int indexA = part.getStart();
+                    for (int i = 1; i < part.getCount()-1; i++) {
+                        int indexB = part.getStart() + i;
+                        int indexC = part.getStart() + i + 1;
+
+                        Vertex a = solid.getVertices().get(solid.getIndices().get(indexA)).transform(mat);
+                        Vertex b = solid.getVertices().get(solid.getIndices().get(indexB)).transform(mat);
+                        Vertex c = solid.getVertices().get(solid.getIndices().get(indexC)).transform(mat);
+
+
+
+                        renderTriangle(a,b,c,part.getColors().get(i%2),false);
+                    }
+                    int indexB = indexA+1;
+                    int indexC = part.getCount()-1;
+                    Vertex a = solid.getVertices().get(solid.getIndices().get(indexA)).transform(mat);
+                    Vertex b = solid.getVertices().get(solid.getIndices().get(indexB)).transform(mat);
+                    Vertex c = solid.getVertices().get(solid.getIndices().get(indexC)).transform(mat);
+
+                    renderTriangle(a,b,c,part.getColors().get(part.getColorsLength()-1),false);
+                }break;
 
             }
         }

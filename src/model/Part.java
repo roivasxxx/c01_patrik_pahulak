@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Part {
-    public enum Topology {POINTS, LINES, TRIANGLES, TRIANGLES_STRIP,AXIS}
+    public enum Topology {POINTS, LINES, TRIANGLES, TRIANGLES_STRIP,AXIS,TRIANGLE_FAN}
     private int start;
     private int count;
     private Topology topology;

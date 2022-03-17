@@ -7,7 +7,6 @@ import java.awt.*;
 
 public class RasterBufferedImage implements Raster<Col>{
     private int width,height;
-    private int[][]array;
     private final BufferedImage img;
     private Col col=new Col(0,0,0);
 
@@ -60,7 +59,7 @@ public class RasterBufferedImage implements Raster<Col>{
     public void clear() {
         Graphics g = img.getGraphics();
         g.setColor(new Color(col.getRGB()));
-        g.clearRect(0, 0, img.getWidth() - 1, img.getHeight() - 1);
+        g.clearRect(0, 0, img.getWidth() , img.getHeight() );
     }
 
     
