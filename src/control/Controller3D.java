@@ -21,9 +21,9 @@ public class Controller3D implements Controller, ActionListener {
 
     private final Panel panel;
 
-    Arrow xAxis = new Arrow('x');
-    Arrow yAxis = new Arrow('y');
-    Arrow zAxis = new Arrow('z');
+    Axis xAxis = new Axis('x');
+    Axis yAxis = new Axis('y');
+    Axis zAxis = new Axis('z');
     TriangleStrip triangleStrip = new TriangleStrip(0.2,-0.2,-0.5);
     Triangle triangle = new Triangle(
 
@@ -70,7 +70,8 @@ public class Controller3D implements Controller, ActionListener {
     private Renderer renderer;
     private double yTransform = 0, xTransform = 0, zTransform = 0,
             yInc = 0, xInc = 0, zInc = 0, zoom = 1;
-    double cubeRotation=0;
+    double cubeRotationX =0;
+    double cubeRotationZ =0;
     private boolean perspective = true;
     private JComboBox comboBox = new JComboBox();
 
@@ -190,15 +191,27 @@ public class Controller3D implements Controller, ActionListener {
                   case KeyEvent.VK_X : xInc -= 0.1;break;
                   case KeyEvent.VK_C : xInc += 0.1;break;
                   case KeyEvent.VK_UP:{
-                      cube.setModel(new Mat4Transl(-0.9,+0.7,0.1).mul( new Mat4RotX(cubeRotation)).mul(new Mat4Transl(+0.9,-0.7,-0.1)));
+                      cube.setModel(cube.getModel().mul(new Mat4Transl(-0.9,+0.7,0.1).mul( new Mat4RotX(Math.PI/8)).mul(new Mat4Transl(+0.9,-0.7,-0.1))));
                       redraw();
-                      cubeRotation+=0.05;
+                      cubeRotationX +=0.005;
                       break;
                   }
                   case KeyEvent.VK_DOWN:{
-                      cube.setModel(new Mat4Transl(-0.9,+0.7,0.1).mul( new Mat4RotX(cubeRotation)).mul(new Mat4Transl(+0.9,-0.7,-0.1)));
+                      cube.setModel(cube.getModel().mul(new Mat4Transl(-0.9,+0.7,0.1).mul( new Mat4RotX(-Math.PI/8)).mul(new Mat4Transl(+0.9,-0.7,-0.1))));
                       redraw();
-                      cubeRotation-=0.05;
+                      cubeRotationX -=0.005;
+                      break;
+                  }
+                  case KeyEvent.VK_RIGHT:{
+                      cube.setModel(cube.getModel().mul(new Mat4Transl(-0.9,+0.7,0.1).mul( new Mat4RotZ(Math.PI/8)).mul(new Mat4Transl(+0.9,-0.7,-0.1))));
+                      redraw();
+                      cubeRotationZ +=0.005;
+                      break;
+                  }
+                  case KeyEvent.VK_LEFT:{
+                      cube.setModel(cube.getModel().mul(new Mat4Transl(-0.9,+0.7,0.1).mul( new Mat4RotZ(-Math.PI/8)).mul(new Mat4Transl(+0.9,-0.7,-0.1))));
+                      redraw();
+                      cubeRotationZ -=0.005;
                       break;
                   }
               }

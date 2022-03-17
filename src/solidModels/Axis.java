@@ -6,8 +6,8 @@ import model.Vertex;
 import transforms.Col;
 import transforms.Point3D;
 
-public class Arrow extends Solid {
-    public Arrow(char axis){
+public class Axis extends Solid {
+    public Axis(char axis){
         Point3D origin=new Point3D(0,0,0);
         Point3D endPoint;
         Col axisCol;

@@ -290,7 +290,6 @@ Rasterizer {
 
 
     public void rasterizeLine(Vertex a,Vertex b,Col color,char axis){
-        System.out.println("????");
         Vec3D vecA = a.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
         Vec3D vecB = b.dehomog().get().mul(new Vec3D(1, -1, 1)).add(new Vec3D(1, 1, 0)).mul(new Vec3D((width - 1) / 2, (height - 1) / 2, 1));
         drawLine(vecA.getX(), vecA.getY(), vecB.getX(), vecB.getY(),color,axis);
